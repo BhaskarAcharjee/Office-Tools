@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>API Spec Generator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <header class="app-header">
+      <h1>API Specification Builder</h1>
+      <p>Quickly build, preview, and export professional API specs</p>
+    </header>
+
+    <main class="main-container">
+      <!-- Left Panel (Form) -->
+      <section class="panel left-panel">
+        <h2>API Configuration</h2>
+
+        <div class="section">
+          <label>Service Name</label>
+          <input id="svcName" type="text" placeholder="Ex: WealthTrack API" />
+
+          <label>Service Description</label>
+          <textarea
+            id="svcDesc"
+            placeholder="Brief summary of the service"
+          ></textarea>
+
+          <div class="inline-fields">
+            <div>
+              <label>HTTP Method</label>
+              <select id="svcMethod">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+              </select>
+            </div>
+
+            <div style="flex: 1">
+              <label>Endpoint URL</label>
+              <input id="svcUrl" type="text" placeholder="/api/v1/endpoint" />
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="section">
+          <h3>Request Headers</h3>
+          <div id="headersContainer" class="param-container"></div>
+          <button type="button" class="add-btn" id="addHeaderBtn">
+            + Add Header
+          </button>
+        </div>
+
+        <div class="section">
+          <h3>Path Parameters</h3>
+          <div id="pathContainer" class="param-container"></div>
+          <button type="button" class="add-btn" id="addPathBtn">
+            + Add Path Parameter
+          </button>
+        </div>
+
+        <div class="section">
+          <h3>Query Parameters</h3>
+          <div id="queryContainer" class="param-container"></div>
+          <button type="button" class="add-btn" id="addQueryBtn">
+            + Add Query Parameter
+          </button>
+        </div>
+
+        <div class="section">
+          <h3>Request Body (JSON)</h3>
+          <textarea
+            id="svcRequestBody"
+            placeholder='{"user":{"id":1,"name":"John"}}'
+          ></textarea>
+        </div>
+
+        <div class="section">
+          <h3>Response Body (JSON)</h3>
+          <textarea
+            id="svcResponseBody"
+            placeholder='{"status":"success","data":{"userId":1}}'
+          ></textarea>
+        </div>
+
+        <!-- <div class="action-buttons">
+          <button class="btn primary" id="previewBtn">Preview</button>
+          <button class="btn secondary" id="exportBtn">Export Excel</button>
+        </div> -->
+      </section>
+
+      <!-- Right Panel (Preview) -->
+      <section class="panel preview-panel" id="previewPanel">
+        <div class="preview-header">
+          <h2>API Preview</h2>
+          <!-- <button class="refresh-btn" id="previewBtn2">Refresh</button> -->
+          <div class="action-buttons">
+            <button class="btn primary" id="previewBtn">Preview</button>
+            <button class="btn secondary" id="exportBtn">Export Excel</button>
+          </div>
+        </div>
+        <div class="preview-content" id="previewOutput">
+          <p class="placeholder-text">
+            Click “Preview” to generate API Spec...
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Built with ❤️ for API Developers</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

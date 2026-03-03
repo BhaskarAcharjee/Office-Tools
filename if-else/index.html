@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>If-Else Logic Block Filter</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --bg: #f8fafc;
+        --panel: #ffffff;
+        --text: #1e293b;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 2rem;
+      }
+      .container {
+        max-width: 1100px;
+        margin: auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 1.5rem;
+      }
+      .card {
+        background: var(--panel);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+      }
+
+      textarea {
+        width: 100%;
+        height: 300px;
+        font-family: "Fira Code", "Consolas", monospace;
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        resize: vertical;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      .stats-box {
+        background: #1e293b;
+        color: #f8fafc;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: monospace;
+      }
+      .stats-box h4 {
+        margin: 0 0 0.5rem 0;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
+
+      button {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.2s;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+
+      pre {
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 1.5rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        min-height: 100px;
+        font-family: "Fira Code", monospace;
+        line-height: 1.6;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: #334155;
+        font-size: 0.8rem;
+        margin: 2px;
+      }
+      label {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .config-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Advanced Logic Extractor</h2>
+
+      <div class="grid">
+        <div class="main-col">
+          <div class="card">
+            <label>Input JavaScript/Java Code:</label>
+            <textarea
+              id="codeInput"
+              placeholder="Paste code here..."
+            ></textarea>
+
+            <label>Keywords (comma separated):</label>
+            <input
+              type="text"
+              id="keywordsInput"
+              value="setAutoPan, setSomething"
+            />
+
+            <div class="controls">
+              <button onclick="execute()">Process Logic</button>
+
+              <label class="config-item">
+                <input type="checkbox" id="caseSensitive" /> Case Sensitive
+              </label>
+
+              <label class="config-item">
+                Match Mode:
+                <select id="matchMode">
+                  <option value="any">Any Keyword</option>
+                  <option value="all">All Keywords</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <label>Filtered Output:</label>
+            <pre id="output"></pre>
+          </div>
+        </div>
+
+        <div class="side-col">
+          <div class="card stats-box">
+            <h4>Statistics</h4>
+            <div id="statsContent">Run processor to see results...</div>
+          </div>
+
+          <div class="card" style="font-size: 0.85rem">
+            <h4>Help</h4>
+            <ul style="padding-left: 1.2rem">
+              <li>
+                <strong>Chains:</strong> Keeps full
+                <code>if/else</code> structures if criteria met.
+              </li>
+              <li>
+                <strong>Deep Filtering:</strong> Blanks internal lines that
+                don't match.
+              </li>
+              <li>
+                <strong>Independent Blocks:</strong> Removed if no keywords
+                found.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initial dummy data
+      document.getElementById("codeInput").value = `if(condition1){
+    if(condition2){
+        setHHJJAutoPan(true);
+    } else {
+        setOjtjther(false);
+    }
+} 
+
+if(condition1){
+    if(condition2){
+        setAutoPan(true);
+    } else {
+        setOther(false);
+    }
+} else if(condition3){
+    setSomething();
+} else {
+    setAutoPan(false);
+}`;
+
+      function execute() {
+        const code = document.getElementById("codeInput").value;
+        const rawKeywords = document.getElementById("keywordsInput").value;
+        const isCaseSensitive =
+          document.getElementById("caseSensitive").checked;
+        const matchMode = document.getElementById("matchMode").value;
+
+        const keywords = rawKeywords
+          .split(",")
+          .map((k) => k.trim())
+          .filter((k) => k !== "");
+
+        if (keywords.length === 0) {
+          document.getElementById("output").textContent =
+            "Please enter at least one keyword.";
+          return;
+        }
+
+        // 1. Split into Logical Chains
+        const chains = getLogicalChains(code);
+
+        // 2. Filter Chains based on Match All / Match Any
+        const filteredChains = chains.filter((chain) => {
+          if (matchMode === "all") {
+            return keywords.every((kw) => contains(chain, kw, isCaseSensitive));
+          }
+          return keywords.some((kw) => contains(chain, kw, isCaseSensitive));
+        });
+
+        // 3. Process internals of kept chains
+        const finalOutput = filteredChains
+          .map((chain) =>
+            processBlockRecursive(chain, keywords, isCaseSensitive),
+          )
+          .join("\n\n")
+          .trim();
+
+        document.getElementById("output").textContent = finalOutput;
+        updateStats(finalOutput, keywords, isCaseSensitive);
+      }
+
+      function contains(text, search, caseSensitive) {
+        if (!caseSensitive) {
+          return text.toLowerCase().includes(search.toLowerCase());
+        }
+        return text.includes(search);
+      }
+
+      function getLogicalChains(code) {
+        const chains = [];
+        let i = 0;
+        while (i < code.length) {
+          let start = code.indexOf("if", i);
+          if (start === -1) break;
+
+          // Simple check to ensure we aren't mid-word
+          const prevChar = code[start - 1];
+          if (prevChar && /[a-zA-Z0-9_]/.test(prevChar)) {
+            i = start + 2;
+            continue;
+          }
+
+          let currentChainEnd = findBlockEnd(code, start);
+
+          while (true) {
+            let nextPart = code.substring(currentChainEnd).trimStart();
+            if (nextPart.startsWith("else")) {
+              let elseStart = code.indexOf("else", currentChainEnd);
+              currentChainEnd = findBlockEnd(code, elseStart);
+            } else {
+              break;
+            }
+          }
+          chains.push(code.substring(start, currentChainEnd));
+          i = currentChainEnd;
+        }
+        return chains;
+      }
+
+      function findBlockEnd(text, startIdx) {
+        let firstBrace = text.indexOf("{", startIdx);
+        if (firstBrace === -1) return text.indexOf(";", startIdx) + 1;
+        let count = 1,
+          j = firstBrace + 1;
+        while (count > 0 && j < text.length) {
+          if (text[j] === "{") count++;
+          if (text[j] === "}") count--;
+          j++;
+        }
+        return j;
+      }
+
+      function processBlockRecursive(code, keywords, isCaseSensitive) {
+        let result = "";
+        let i = 0;
+        while (i < code.length) {
+          let openBraceIndex = code.indexOf("{", i);
+          if (openBraceIndex === -1) {
+            result += filterLines(code.substring(i), keywords, isCaseSensitive);
+            break;
+          }
+
+          let header = code.substring(i, openBraceIndex);
+          let j = openBraceIndex + 1,
+            count = 1;
+          while (count > 0 && j < code.length) {
+            if (code[j] === "{") count++;
+            if (code[j] === "}") count--;
+            j++;
+          }
+          let body = code.substring(openBraceIndex + 1, j - 1);
+
+          const hasAnyKeyword = keywords.some((kw) =>
+            contains(body, kw, isCaseSensitive),
+          );
+
+          if (hasAnyKeyword) {
+            result +=
+              header +
+              "{" +
+              processBlockRecursive(body, keywords, isCaseSensitive) +
+              "}";
+          } else {
+            result += header + "{\n    }";
+          }
+          i = j;
+        }
+        return result;
+      }
+
+      function filterLines(text, keywords, isCaseSensitive) {
+        return text
+          .split("\n")
+          .map((line) => {
+            const trimmed = line.trim();
+            if (keywords.some((kw) => contains(line, kw, isCaseSensitive)))
+              return line;
+            if (
+              trimmed.startsWith("if") ||
+              trimmed.startsWith("else") ||
+              trimmed === "" ||
+              trimmed === "}"
+            )
+              return line;
+            return "";
+          })
+          .join("\n");
+      }
+
+      function updateStats(text, keywords, isCaseSensitive) {
+        let html = `<div style="margin-bottom:10px">Total Chains: ${getLogicalChains(text).length}</div>`;
+        keywords.forEach((kw) => {
+          const regex = new RegExp(
+            kw.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"),
+            isCaseSensitive ? "g" : "gi",
+          );
+          const count = (text.match(regex) || []).length;
+          html += `<div><span class="badge">${kw}</span>: ${count} found</div>`;
+        });
+        document.getElementById("statsContent").innerHTML = html;
+      }
+    </script>
+  </body>
+</html>
